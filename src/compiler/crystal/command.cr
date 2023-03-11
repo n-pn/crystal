@@ -460,6 +460,10 @@ class Crystal::Command
         opts.on("--static", "Link statically") do
           compiler.static = true
         end
+        opts.on("--multi-modules", "Generate multi LLVM modules even in release mode") do
+          compiler.multi_modules = true
+          compiler.single_module = false
+        end
       end
 
       opts.on("--stdin-filename ", "Source file name to be read from STDIN") do |stdin_filename|

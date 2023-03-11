@@ -89,6 +89,9 @@ module Crystal
     # one LLVM module is created for each type in a program.
     property? single_module = false
 
+    # If `true`, generates multi LLVM modules. Overrides `release` single_module mode
+    property? multi_modules = false
+
     # A `ProgressTracker` object which tracks compilation progress.
     property progress_tracker = ProgressTracker.new
 
@@ -254,7 +257,8 @@ module Crystal
 
     private def codegen(program, node : ASTNode, sources, output_filename)
       llvm_modules = @progress_tracker.stage("Codegen (crystal)") do
-        program.codegen node, debug: debug, single_module: @single_module || @release || @cross_compile || !@emit_targets.none?
+        single_module = @single_module || (@release && !@multi_modules) || @cross_compile || !@emit_targets.none?
+        program.codegen node, debug: debug, single_module: single_module
       end
 
       output_dir = CacheDir.instance.directory_for(sources)
